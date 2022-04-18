@@ -45,6 +45,11 @@ function App(props) {
     setTaskItems(itemsCopy);
   }
 
+  const multFuncEx = () => {
+    haddleAddTask();
+    setModalVisible(!setModalVisible)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
@@ -83,26 +88,13 @@ function App(props) {
               style={styles.writeTaskWrapper}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-              <TouchableOpacity onPress={() => haddleAddTask()}>
-                <View style={styles.addWrappper}>
+              <Pressable style={[styles.button, styles.buttonSaveTask]} onPress={() => multFuncEx()}>
+                <Text style={styles.textStyle}>+</Text>
+                {/* <View>
                   <Text style={styles.addText}></Text>
-                </View>
-              </TouchableOpacity>
+                </View> */}
+              </Pressable>
             </KeyboardAvoidingView>
-            {/* x Button */}
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>x</Text>
-            </Pressable>
-            {/* save task Button */}
-            <Pressable
-              style={[styles.button, styles.buttonSaveTask]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>+</Text>
-            </Pressable>
           </View>
         </View>
       </Modal>
@@ -143,8 +135,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'
   },
   writeTaskWrapper: {
-    position: 'absolute',
-    bottom: 60,
+    position: 'relative',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -167,6 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: '#C0C0C0',
     borderWidth: 1,
+    
   },
   bottomPlace: {
     justifyContent: 'center',
@@ -205,7 +197,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: '#FFF',
     justifyContent: 'center',
-    position: 'absolute'
+    position: 'relative'
   },
   buttonOpen: {
     backgroundColor: "#F194FF",
@@ -224,6 +216,8 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
+    fontSize: 24,
+    fontWeight: 'bold',
     textAlign: "center"
   },
 });

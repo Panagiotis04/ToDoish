@@ -12,6 +12,7 @@ import {
   Keyboard,
   Image,
   Modal,
+  Pressable,
   SafeAreaView } from 'react-native';
 
 import React, {useState} from 'react';
@@ -29,8 +30,8 @@ const CreateTaskPopup = ({visible, childre}) => {
 function App(props) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
-  const [visible, setVisible] = useState(false);
 
+  const [modalVisible, setModalVisible] = useState(false);
 
   const haddleAddTask = () => {
     // Keyboard.dismiss()
@@ -64,27 +65,55 @@ function App(props) {
           </View>
         </View>
       </View>
-
-      <CreateTaskPopup visible={visible}>
-        <View style={{alignItems: 'center}'}}>
-          <View style={styles.header}>
-            <Image source={require('./assets/icon.png')} style={{height: 20, width: 20}} />
+      {/* Create task popup */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Create Task</Text>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.writeTaskWrapper}
+            >
+              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+              <TouchableOpacity onPress={() => haddleAddTask()}>
+                <View style={styles.addWrappper}>
+                  <Text style={styles.addText}></Text>
+                </View>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
+            {/* x Button */}
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>x</Text>
+            </Pressable>
+            {/* save task Button */}
+            <Pressable
+              style={[styles.button, styles.buttonSaveTask]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>+</Text>
+            </Pressable>
           </View>
         </View>
-      </CreateTaskPopup>
-      <Button title='Popup' onPress={() => setVisible(true)} />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.writeTaskWrapper}
+      </Modal>
+      {/* + Button */}
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
       >
-        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-        <TouchableOpacity onPress={() => haddleAddTask()}>
-          <View style={styles.addWrappper}>
-            <Text style={styles.addText}></Text>
-          </View>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
+        <Text style={styles.textStyle}>+</Text>
+      </Pressable>
+      
     </View>
   );
 }
@@ -94,7 +123,7 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: 'white',
   },
   tasksWrapper: {
     paddingTop: 80,
@@ -137,26 +166,53 @@ const styles = StyleSheet.create({
     borderColor: '#C0C0C0',
     borderWidth: 1,
   },
-  createTaskBackground: {
+  centeredView: {
     flex: 1,
-    backgroundColor: 'gray',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: '5%',
-    paddingVertical: '50%',
+    justifyContent: 'flex-end',
+    alignItems: "center",
+    // marginTop: 22
   },
-  taskContainer: {
-    width: '80%',
-    backgroundColor: 'white',
-    paddingHorizontal: 40,
-    paddingVertical: 50,
+  modalView: {
+    margin: 40,
+    width: '90%',
+    height: '90%',
+    backgroundColor: "white",
     borderRadius: 20,
-    elevation: 20,
-    alignItems: 'center'
-  },
-  header: {
-    width: '100%',
-    height: 40,
+    padding: 35,
     alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "red",
+  },
+  buttonSaveTask: {
+    backgroundColor: "green"
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 18
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
   },
 });

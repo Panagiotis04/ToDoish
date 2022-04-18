@@ -9,20 +9,46 @@ import {
   TextInput,
   TouchableOpacity,
   ImageBackground,
+  Keyboard,
+  Image,
+  Modal,
+  Pressable,
   SafeAreaView } from 'react-native';
 
 import React, {useState} from 'react';
-import Task from './components/Task'
+import Task from './Task'
+
+const CreateTaskPopup = ({visible, childre}) => {
+  const [showModal, setShowModal] = useState(visible)
+  return <Modal transparent visible={true}>
+    <View style={styles.createTaskBackground}>
+      <View style={styles.taskContainer}></View>
+    </View>
+  </Modal>
+};
 
 function App(props) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isDisabled, setDisabled] = useState(true)
 
   const haddleAddTask = () => {
+    Keyboard.dismiss()
     setTaskItems([...taskItems, task])
     setTask(null);
-    console.log(taskItems)
   }  
+
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    itemsCopy.splice(index, 1);
+    setTaskItems(itemsCopy);
+  }
+
+  const multFuncEx = () => {
+    haddleAddTask();
+    setModalVisible(!setModalVisible)
+  }
 
   return (
     <View style={styles.container}>
@@ -33,25 +59,55 @@ function App(props) {
           {/* Tasks */}
           <View style={styles.item}>
             {
-              taskItems.map((item) => {
-                <Task text={item} /> 
+              taskItems.map((item, index) => {
+                return (
+                  <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+                    <Task text={item} /> 
+                  </TouchableOpacity>
+                )
               })
             }
           </View>
         </View>
       </View>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.writeTaskWrapper}
+      {/* Create task popup */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
       >
-        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-        <TouchableOpacity onPress={() => haddleAddTask()}>
-          <View style={styles.addWrappper}>
-            <Text style={styles.addText}></Text>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Create Task</Text>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              // style={styles.writeTaskWrapper}
+            >
+              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+              <Pressable style={[styles.button, styles.buttonSaveTask]} disabled={false} onPress={() => multFuncEx()}>
+                <Text style={styles.textStyle}>+</Text>
+                {/* <View>
+                  <Text style={styles.addText}></Text>
+                </View> */}
+              </Pressable>
+            </KeyboardAvoidingView>
           </View>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
+        </View>
+      </Modal>
+      {/* + Button */}
+      <View style={styles.bottomPlace}>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>+</Text>
+      </Pressable>
+      </View>
+      
     </View>
   );
 }
@@ -61,7 +117,7 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'gray',
+    backgroundColor: 'white',
   },
   tasksWrapper: {
     paddingTop: 80,
@@ -79,8 +135,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'
   },
   writeTaskWrapper: {
-    position: 'absolute',
-    bottom: 60,
+    position: 'relative',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -103,5 +158,66 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: '#C0C0C0',
     borderWidth: 1,
-  }
+    
+  },
+  bottomPlace: {
+    justifyContent: 'center',
+    alignItems: 'baseline',
+    position: 'absolute',
+    marginLeft: '80%',
+    bottom: 20
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: "center",
+    // marginTop: 22
+  },
+  modalView: {
+    margin: 40,
+    width: '90%',
+    height: '90%',
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    bottom: 0,
+    backgroundColor: '#FFF',
+    justifyContent: 'center',
+    position: 'relative'
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "red",
+  },
+  buttonSaveTask: {
+    backgroundColor: "green"
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 18
+  },
+  modalText: {
+    marginBottom: 15,
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: "center"
+  },
 });

@@ -16,7 +16,7 @@ import {
   SafeAreaView } from 'react-native';
 
 import React, {useState} from 'react';
-import Task from './components/Task'
+import Task from './Task'
 
 const CreateTaskPopup = ({visible, childre}) => {
   const [showModal, setShowModal] = useState(visible)
@@ -30,8 +30,8 @@ const CreateTaskPopup = ({visible, childre}) => {
 function App(props) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
-
   const [modalVisible, setModalVisible] = useState(false);
+  const [isDisabled, setDisabled] = useState(true)
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
@@ -85,10 +85,10 @@ function App(props) {
             <Text style={styles.modalText}>Create Task</Text>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              style={styles.writeTaskWrapper}
+              // style={styles.writeTaskWrapper}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-              <Pressable style={[styles.button, styles.buttonSaveTask]} onPress={() => multFuncEx()}>
+              <Pressable style={[styles.button, styles.buttonSaveTask]} disabled={false} onPress={() => multFuncEx()}>
                 <Text style={styles.textStyle}>+</Text>
                 {/* <View>
                   <Text style={styles.addText}></Text>

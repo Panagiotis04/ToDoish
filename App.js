@@ -34,9 +34,9 @@ function App(props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const haddleAddTask = () => {
-    // Keyboard.dismiss()
-    // setTaskItems([...taskItems, task])
-    // setTask(null);
+    Keyboard.dismiss()
+    setTaskItems([...taskItems, task])
+    setTask(null);
   }  
 
   const completeTask = (index) => {
@@ -107,12 +107,14 @@ function App(props) {
         </View>
       </Modal>
       {/* + Button */}
+      <View style={styles.bottomPlace}>
       <Pressable
         style={[styles.button, styles.buttonOpen]}
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.textStyle}>+</Text>
       </Pressable>
+      </View>
       
     </View>
   );
@@ -166,6 +168,13 @@ const styles = StyleSheet.create({
     borderColor: '#C0C0C0',
     borderWidth: 1,
   },
+  bottomPlace: {
+    justifyContent: 'center',
+    alignItems: 'baseline',
+    position: 'absolute',
+    marginLeft: '80%',
+    bottom: 20
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -193,8 +202,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
+    bottom: 0,
     backgroundColor: '#FFF',
     justifyContent: 'center',
+    position: 'absolute'
   },
   buttonOpen: {
     backgroundColor: "#F194FF",

@@ -1,33 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import { 
-  StyleSheet, 
-  Text, 
-  View,
-  Button,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  TouchableOpacity,
-  ImageBackground,
-  Keyboard,
-  Image,
-  Modal,
-  Pressable,
-  SafeAreaView } from 'react-native';
-
 import React, {useState} from 'react';
-import Task from './Task'
+import { 
+        View, 
+        Text, 
+        Button,
+        StyleSheet,
+        Modal,
+        KeyboardAvoidingView,
+        TextInput,
+        Pressable,
+        Keyboard,
+        TouchableOpacity,
+       } from 'react-native';
+import { NavigationContainer, DrawerActions } from '@react-navigation/native';
+import 'react-native-gesture-handler';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
+import Task from './Task';
 
-const CreateTaskPopup = ({visible, childre}) => {
-  const [showModal, setShowModal] = useState(visible)
-  return <Modal transparent visible={true}>
-    <View style={styles.createTaskBackground}>
-      <View style={styles.taskContainer}></View>
-    </View>
-  </Modal>
-};
-
-function App(props) {
+function Tasks({ navigation }) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -55,7 +49,7 @@ function App(props) {
       <View style={styles.tasksWrapper}>
         <View >
           {/* Title */}
-          <Text style={styles.sectionTitle} >Tasks</Text>
+          {/* <Text style={styles.sectionTitle} >Tasks</Text> */}
           {/* Tasks */}
           <View style={styles.item}>
             {
@@ -112,7 +106,53 @@ function App(props) {
   );
 }
 
-export default App;
+function Notifications() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Notifications Screen</Text>
+    </View>
+  );
+}
+
+function CustomDrawerContent(props) {
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        label="Close drawer"
+        onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
+      />
+      <DrawerItem
+        label="Toggle drawer"
+        onPress={() => props.navigation.dispatch(DrawerActions.toggleDrawer())}
+      />
+    </DrawerContentScrollView>
+  );
+}
+
+const Drawer = createDrawerNavigator();
+
+function MyDrawer() {
+  return (
+    <Drawer.Navigator
+      // useLegacyImplementation = {false}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      <Drawer.Screen name="Tasks" component={Tasks} />
+      <Drawer.Screen name="Notifications" component={Notifications} />
+    </Drawer.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <MyDrawer>
+      </MyDrawer>
+    </NavigationContainer>
+  );
+}
+
 
 const styles = StyleSheet.create({
   container: {

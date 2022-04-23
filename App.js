@@ -20,6 +20,7 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import Task from './Task';
+import Order from './Order';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -108,8 +109,12 @@ function Tasks({ navigation }) {
   );
 }
 
-export const Notifications = () => {
-  const [date, setDate] = useState(new Date());
+export const Orders = () => {
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [dateItems, setDateItems] = useState([new Date(), new Date()]);
@@ -141,25 +146,105 @@ export const Notifications = () => {
     showMode('time');
   };
 
+  const haddleAddTask = () => {
+    Keyboard.dismiss()
+    setTaskItems([...taskItems, task])
+    setTask(null);
+  }  
+
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    itemsCopy.splice(index, 1);
+    setTaskItems(itemsCopy);
+  }
+
+  const multFuncEx = () => {
+    haddleAddTask();
+    setModalVisible(!setModalVisible)
+  }
+
   return (
-    <View>
-      <Text>Order Date: {date.toLocaleString()}</Text>
-      <DateTimePicker
-        testID="dateTimePicker1"
-        value={dateItems[0]}
-        mode={mode}
-        is24Hour={true}
-        onChange={onChange1}
-      />
-      <Text>Estimate Arrival: </Text>
-      <DateTimePicker
-        testID="dateTimePicker2"
-        value={dateItems[1]}
-        mode={mode}
-        is24Hour={true}
-        onChange={onChange2}
-        minimumDate={dateItems[0]}
-      />
+    <View style={styles.container}>
+      <View style={styles.tasksWrapper}>
+        <View >
+          {/* Title */}
+          {/* <Text style={styles.sectionTitle} >Tasks</Text> */}
+          {/* Tasks */}
+          <View style={styles.item}>
+            {
+              taskItems.map((item, index) => {
+                return (
+                  <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+                    <Order 
+                      text={item} 
+                      date1={dateItems[0].getDate() + '-' + dateItems[0].getMonth()} 
+                      date2={dateItems[1].getDate() + '-' + dateItems[1].getMonth()} /> 
+                  </TouchableOpacity>
+                )
+              })
+            }
+          </View>
+        </View>
+      </View>
+      {/* Create task popup */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Create Task</Text>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              // style={styles.writeTaskWrapper}
+            >
+              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+              <View>
+                <Text>Order Date: {date.toLocaleString()}</Text>
+                <DateTimePicker
+                  testID="dateTimePicker1"
+                  value={dateItems[0]}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={onChange1}
+                />
+                <Text>Estimate Arrival: </Text>
+                <DateTimePicker
+                  testID="dateTimePicker2"
+                  value={dateItems[1]}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={onChange2}
+                  minimumDate={dateItems[0]}
+                />
+              </View>
+              <View>
+              <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
+                <Text style={styles.textStyle}>+</Text>
+              </Pressable>
+              <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>x</Text>
+              </Pressable>
+              </View>
+            </KeyboardAvoidingView>
+          </View>
+        </View>
+      </Modal>
+      {/* + Button */}
+      <View style={styles.bottomPlace}>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.textStyle}>+</Text>
+      </Pressable>
+      </View>
+      
     </View>
   );
 }
@@ -188,7 +273,7 @@ function MyDrawer() {
       // useLegacyImplementation = {false}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Notifications" component={Notifications} />
+      <Drawer.Screen name="Orders" component={Orders} />
       <Drawer.Screen name="Tasks" component={Tasks} />
     </Drawer.Navigator>
   );
@@ -296,7 +381,23 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   buttonSaveTask: {
-    backgroundColor: "green"
+    width: 150,
+    height: 60,
+    borderRadius: 5,
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    position: 'relative',
+    marginTop: 450,
+    marginLeft: 150,
+  },
+  buttonCloseTask: {
+    width: 150,
+    height: 60,
+    borderRadius: 5,
+    bottom: 0,
+    backgroundColor: 'red',
+    position: 'absolute',
+    justifyContent: 'center'
   },
   textStyle: {
     color: "white",

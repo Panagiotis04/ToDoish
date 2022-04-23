@@ -21,6 +21,8 @@ import {
 } from '@react-navigation/drawer';
 import Task from './Task';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 function Tasks({ navigation }) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
@@ -106,10 +108,58 @@ function Tasks({ navigation }) {
   );
 }
 
-function Notifications() {
+export const Notifications = () => {
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [dateItems, setDateItems] = useState([new Date(), new Date()]);
+  
+  const onChange1 = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate)
+    setDateItems([currentDate, dateItems[1]]);
+  };
+
+  const onChange2 = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate)
+    setDateItems([dateItems[0], currentDate]);
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notifications Screen</Text>
+    <View>
+      <Text>Order Date: {date.toLocaleString()}</Text>
+      <DateTimePicker
+        testID="dateTimePicker1"
+        value={dateItems[0]}
+        mode={mode}
+        is24Hour={true}
+        onChange={onChange1}
+      />
+      <Text>Estimate Arrival: </Text>
+      <DateTimePicker
+        testID="dateTimePicker2"
+        value={dateItems[1]}
+        mode={mode}
+        is24Hour={true}
+        onChange={onChange2}
+        minimumDate={dateItems[0]}
+      />
     </View>
   );
 }
@@ -138,8 +188,8 @@ function MyDrawer() {
       // useLegacyImplementation = {false}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Tasks" component={Tasks} />
       <Drawer.Screen name="Notifications" component={Notifications} />
+      <Drawer.Screen name="Tasks" component={Tasks} />
     </Drawer.Navigator>
   );
 }

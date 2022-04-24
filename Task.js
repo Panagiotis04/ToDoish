@@ -19,8 +19,6 @@ const Task = (props) => {
         <View style={styles.item}>
             <View style={styles.itemLeft}>
                 <Image source={iconMap.has(props.image) ? iconMap.get(props.image) : iconMap.get('notFound')} style={styles.icon} />
-                {/* <Image source={props.image === 'biking' ? bikeIcon : props.image === 'gym' ? gymIcon : boxingIcon } style={styles.icon} /> */}
-                {/* <TouchableOpacity style={styles.square}></TouchableOpacity> */}
                 <Text style={styles.itemTitle}>{props.text}</Text>
             </View>
             <View style={styles.circular}></View>

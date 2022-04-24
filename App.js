@@ -113,6 +113,8 @@ export const Orders = () => {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [store, setStore] = useState();
+  const [storeItems, setStoreItems] = useState([]);
 
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
@@ -149,19 +151,26 @@ export const Orders = () => {
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
+    setStoreItems([...storeItems, store])
+    setStore(null);
     setTask(null);
   }  
 
   const completeTask = (index) => {
     let itemsCopy = [...taskItems];
+    let storesCopy = [...storeItems];
     itemsCopy.splice(index, 1);
+    storesCopy.splice(index, 1);
     setTaskItems(itemsCopy);
+    setStoreItems(storesCopy);
   }
 
   const multFuncEx = () => {
     haddleAddTask();
     setModalVisible(!setModalVisible)
   }
+
+  const iconsNames = ['albert', 'amazon', 'notFound']
 
   return (
     <View style={styles.container}>
@@ -176,7 +185,8 @@ export const Orders = () => {
                       <Order 
                         text={item} 
                         date1={dateItems[0].getDate() + '-' + dateItems[0].getMonth()} 
-                        date2={dateItems[1].getDate() + '-' + dateItems[1].getMonth()} /> 
+                        date2={dateItems[1].getDate() + '-' + dateItems[1].getMonth()}
+                        image={storeItems[index].split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} />
                     </TouchableOpacity>
                   )
                 })
@@ -197,12 +207,12 @@ export const Orders = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Create Task</Text>
+            <Text style={styles.modalText}>Create Order</Text>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              // style={styles.writeTaskWrapper}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+              <TextInput style={styles.input} placeholder={'Write store name'} value={store} onChangeText={o => setStore(o)} />
               <View>
                 <Text>Order Date: {date.toLocaleString()}</Text>
                 <DateTimePicker

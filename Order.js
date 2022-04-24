@@ -8,6 +8,10 @@ import {
 } from 'react-native'
 
 const Order = (props) => {
+    const iconMap = new Map();
+    iconMap.set('albert', require('./assets/albertHeijn.png'));
+    iconMap.set('amazon', require('./assets/amazon.png'));
+
     return (
         <View style={styles.item}>
             <View style={styles.itemLeft}>
@@ -22,7 +26,7 @@ const Order = (props) => {
                 </View>
                 
             </View>
-            <Image source={require('./assets/albertHeijn.png')} style={styles.icon} />
+            <Image source={iconMap.has(props.image) ? iconMap.get(props.image) : iconMap.get('notFound')} style={styles.icon} />
         </View>
     )
 }

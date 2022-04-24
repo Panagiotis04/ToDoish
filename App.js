@@ -10,9 +10,9 @@ import {
         Pressable,
         Keyboard,
         TouchableOpacity,
+
        } from 'react-native';
-import { NavigationContainer, DrawerActions } from '@react-navigation/native';
-import 'react-native-gesture-handler';
+import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -23,6 +23,27 @@ import Task from './Task';
 import Order from './Order';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { ScrollView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+
+// function Tasks({ navigation }) {
+//   return (
+//     <SafeAreaView style={styles.container}>
+//       <ScrollView style={styles.scrollView}>
+//         <Text style={{fontSize: 100}}>
+//           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+//           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+//           minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+//           aliquip ex ea commodo consequat. Duis aute irure dolor in
+//           reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+//           pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+//           culpa qui officia deserunt mollit anim id est laborum.
+//         </Text>
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState();
@@ -50,10 +71,7 @@ function Tasks({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
-        <View >
-          {/* Title */}
-          {/* <Text style={styles.sectionTitle} >Tasks</Text> */}
-          {/* Tasks */}
+        <ScrollView style={styles.scrollView}>
           <View style={styles.item}>
             {
               taskItems.map((item, index) => {
@@ -65,8 +83,8 @@ function Tasks({ navigation }) {
               })
             }
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </View>   
       {/* Create task popup */}
       <Modal
         animationType='slide'
@@ -85,11 +103,11 @@ function Tasks({ navigation }) {
               // style={styles.writeTaskWrapper}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-              <Pressable style={[styles.button, styles.buttonSaveTask]} disabled={false} onPress={() => multFuncEx()}>
+              <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
                 <Text style={styles.textStyle}>+</Text>
-                {/* <View>
-                  <Text style={styles.addText}></Text>
-                </View> */}
+              </Pressable>
+              <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>x</Text>
               </Pressable>
             </KeyboardAvoidingView>
           </View>
@@ -97,12 +115,12 @@ function Tasks({ navigation }) {
       </Modal>
       {/* + Button */}
       <View style={styles.bottomPlace}>
-      <Pressable
-        style={[styles.button, styles.buttonOpen]}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.textStyle}>+</Text>
-      </Pressable>
+        <Pressable
+          style={[styles.button, styles.buttonOpen]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.textStyle}>+</Text>
+        </Pressable>
       </View>
       
     </View>
@@ -166,25 +184,24 @@ export const Orders = () => {
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
-        <View >
-          {/* Title */}
-          {/* <Text style={styles.sectionTitle} >Tasks</Text> */}
-          {/* Tasks */}
-          <View style={styles.item}>
-            {
-              taskItems.map((item, index) => {
-                return (
-                  <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                    <Order 
-                      text={item} 
-                      date1={dateItems[0].getDate() + '-' + dateItems[0].getMonth()} 
-                      date2={dateItems[1].getDate() + '-' + dateItems[1].getMonth()} /> 
-                  </TouchableOpacity>
-                )
-              })
-            }
+        <ScrollView style={styles.scrollView}>
+          <View >
+            <View style={styles.item}>
+              {
+                taskItems.map((item, index) => {
+                  return (
+                    <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+                      <Order 
+                        text={item} 
+                        date1={dateItems[0].getDate() + '-' + dateItems[0].getMonth()} 
+                        date2={dateItems[1].getDate() + '-' + dateItems[1].getMonth()} /> 
+                    </TouchableOpacity>
+                  )
+                })
+              }
+            </View>  
           </View>
-        </View>
+        </ScrollView>
       </View>
       {/* Create task popup */}
       <Modal
@@ -292,10 +309,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 30,
     backgroundColor: 'white',
   },
+  scrollView: {
+    paddingTop: 60,
+    marginHorizontal: 0,
+  },
   tasksWrapper: {
-    paddingTop: 80,
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
     paddingHorizontal: 20,
   },
   sectionTitle: {
@@ -303,7 +326,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   item: {
-    marginTop: 30,
+    flex: 1,
+    marginTop: -70,
   },
   createTask: {
     backgroundColor: 'red',

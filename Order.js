@@ -11,20 +11,25 @@ const Order = (props) => {
     return (
         <View style={styles.item}>
             <View style={styles.itemLeft}>
-                <Image source={require('./assets/albertHeijn.png')} style={styles.icon} />
-                <Text style={styles.itemText}>{props.text}</Text>
-                <Text style={styles.itemText}>{'Order date: '} {props.date1}</Text>
-                <Text style={styles.itemText}>{'Estimate arrival: '}{props.date2}</Text>
+                <View style={styles.itemName}>
+                    <Text style={styles.itemTitle}>{props.text}</Text>
+                    <View style={styles.orderDate}>
+                        <Text style={styles.orderDate}>{'Order date: '} {props.date1}</Text>
+                        <View>
+                            <Text style={styles.estimateArrival}>{'Estimate arrival: '}{props.date2}</Text>
+                        </View>
+                    </View>
+                </View>
+                
             </View>
-            <View style={styles.circular}></View>
+            <Image source={require('./assets/albertHeijn.png')} style={styles.icon} />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     item: {
-        backgroundColor: '#FFF'
-        ,
+        backgroundColor: '#FFF',
         padding: 10,
         borderRadius: 15,
         flexDirection: 'row',
@@ -32,10 +37,27 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 20,
     },
+    itemName: {
+        alignItems: 'baseline'
+    },
+    orderDate: {
+        justifyContent: 'space-between',
+        position: 'relative',
+        fontStyle: 'italic'
+    },
+    estimateArrival: {
+        position: 'relative',
+        fontStyle: 'italic'
+    },
     itemLeft: {
+        flex: 3,
         flexDirection: 'row',
         alignItems: 'center',
         flexWrap: 'wrap',
+    },
+    itemTitle: {
+        fontSize: 16,
+        fontWeight: 'bold'
     },
     square: {
         width: 32, 
@@ -57,8 +79,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     icon: {
-        width: 30,
-        height: 30,
+        width: 50,
+        height: 50,
     }
 });
 

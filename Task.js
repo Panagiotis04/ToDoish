@@ -8,14 +8,18 @@ import {
 } from 'react-native'
 
 const Task = (props) => {
-    const bikeIcon = require('./assets/biking.png');
-    const gymIcon = require('./assets/gym.png');
-    const boxingIcon = require('./assets/boxing.png')
+    const iconMap = new Map();
+    iconMap.set('biking', require('./assets/biking.png'));
+    iconMap.set('boxing', require('./assets/boxing.png'));
+    iconMap.set('gym', require('./assets/gym.png'));
+    iconMap.set('notes', require('./assets/notes.png'))
+    iconMap.set('notFound', require('./assets/empty-set.png'))
 
     return (
         <View style={styles.item}>
             <View style={styles.itemLeft}>
-                <Image source={props.image === 'biking' ? bikeIcon : props.image === 'gym' ? gymIcon : boxingIcon } style={styles.icon} />
+                <Image source={iconMap.has(props.image) ? iconMap.get(props.image) : iconMap.get('notFound')} style={styles.icon} />
+                {/* <Image source={props.image === 'biking' ? bikeIcon : props.image === 'gym' ? gymIcon : boxingIcon } style={styles.icon} /> */}
                 {/* <TouchableOpacity style={styles.square}></TouchableOpacity> */}
                 <Text style={styles.itemTitle}>{props.text}</Text>
             </View>

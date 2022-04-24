@@ -49,6 +49,8 @@ function Tasks({ navigation }) {
     setModalVisible(!setModalVisible)
   }
 
+  const iconsNames = ['biking', 'boxing', 'gym', 'notes', 'notFound']
+
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
@@ -58,7 +60,7 @@ function Tasks({ navigation }) {
               taskItems.map((item, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                    <Task text={item} image={item.split(" ")[0].toLowerCase()} /> 
+                    <Task text={item} image={item.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} /> 
                   </TouchableOpacity>
                 )
               })
@@ -270,8 +272,8 @@ function MyDrawer() {
       // useLegacyImplementation = {false}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Orders" component={Orders} />
       <Drawer.Screen name="Tasks" component={Tasks} />
+      <Drawer.Screen name="Orders" component={Orders} />
     </Drawer.Navigator>
   );
 }

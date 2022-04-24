@@ -24,26 +24,7 @@ import Order from './Order';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-
-// function Tasks({ navigation }) {
-//   return (
-//     <SafeAreaView style={styles.container}>
-//       <ScrollView style={styles.scrollView}>
-//         <Text style={{fontSize: 100}}>
-//           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-//           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-//           minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-//           aliquip ex ea commodo consequat. Duis aute irure dolor in
-//           reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-//           pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-//           culpa qui officia deserunt mollit anim id est laborum.
-//         </Text>
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// }
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState();
@@ -77,7 +58,7 @@ function Tasks({ navigation }) {
               taskItems.map((item, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                    <Task text={item} /> 
+                    <Task text={item} image={item.split(" ")[0].toLowerCase()} /> 
                   </TouchableOpacity>
                 )
               })
@@ -100,7 +81,6 @@ function Tasks({ navigation }) {
             <Text style={styles.modalText}>Create Task</Text>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              // style={styles.writeTaskWrapper}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
               <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>

@@ -8,12 +8,18 @@ import {
 } from 'react-native'
 
 const Task = (props) => {
+    const iconMap = new Map();
+    iconMap.set('biking', require('./assets/biking.png'));
+    iconMap.set('boxing', require('./assets/boxing.png'));
+    iconMap.set('gym', require('./assets/gym.png'));
+    iconMap.set('notes', require('./assets/notes.png'))
+    iconMap.set('notFound', require('./assets/empty-set.png'))
+
     return (
         <View style={styles.item}>
             <View style={styles.itemLeft}>
-                <Image source={require('./assets/bike.png')} style={styles.icon} />
-                {/* <TouchableOpacity style={styles.square}></TouchableOpacity> */}
-                <Text style={styles.itemText}>{props.text}</Text>
+                <Image source={iconMap.has(props.image) ? iconMap.get(props.image) : iconMap.get('notFound')} style={styles.icon} />
+                <Text style={styles.itemTitle}>{props.text}</Text>
             </View>
             <View style={styles.circular}></View>
         </View>
@@ -22,8 +28,7 @@ const Task = (props) => {
 
 const styles = StyleSheet.create({
     item: {
-        backgroundColor: '#FFF'
-        ,
+        backgroundColor: '#FFF',
         padding: 10,
         borderRadius: 15,
         flexDirection: 'row',
@@ -35,6 +40,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         flexWrap: 'wrap',
+    },
+    itemTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginLeft: 10,
+        maxWidth: '80%',
     },
     square: {
         width: 32, 

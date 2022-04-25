@@ -1,33 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { 
-  StyleSheet, 
-  Text, 
-  View,
-  Button,
-  KeyboardAvoidingView,
-  Platform,
-  TextInput,
-  TouchableOpacity,
-  ImageBackground,
-  Keyboard,
-  Image,
-  Modal,
-  Pressable,
-  SafeAreaView } from 'react-native';
-
 import React, {useState} from 'react';
-import Task from './Task'
+import { 
+        View, 
+        Text, 
+        Button,
+        StyleSheet,
+        Modal,
+        KeyboardAvoidingView,
+        TextInput,
+        Pressable,
+        Keyboard,
+        TouchableOpacity,
 
-const CreateTaskPopup = ({visible, childre}) => {
-  const [showModal, setShowModal] = useState(visible)
-  return <Modal transparent visible={true}>
-    <View style={styles.createTaskBackground}>
-      <View style={styles.taskContainer}></View>
-    </View>
-  </Modal>
-};
+       } from 'react-native';
+import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem,
+} from '@react-navigation/drawer';
+import Task from './Task';
+import Order from './Order';
 
-function App(props) {
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { ScrollView } from 'react-native-gesture-handler';
+import { StatusBar } from 'expo-status-bar';
+
+function Tasks({ navigation }) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -50,26 +49,25 @@ function App(props) {
     setModalVisible(!setModalVisible)
   }
 
+  const iconsNames = ['biking', 'boxing', 'gym', 'notes', 'notFound']
+
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
-        <View >
-          {/* Title */}
-          <Text style={styles.sectionTitle} >Tasks</Text>
-          {/* Tasks */}
+        <ScrollView style={styles.scrollView}>
           <View style={styles.item}>
             {
               taskItems.map((item, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                    <Task text={item} /> 
+                    <Task text={item} image={item.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} /> 
                   </TouchableOpacity>
                 )
               })
             }
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </View>   
       {/* Create task popup */}
       <Modal
         animationType='slide'
@@ -85,15 +83,163 @@ function App(props) {
             <Text style={styles.modalText}>Create Task</Text>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              // style={styles.writeTaskWrapper}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-              <Pressable style={[styles.button, styles.buttonSaveTask]} disabled={false} onPress={() => multFuncEx()}>
+              <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
                 <Text style={styles.textStyle}>+</Text>
-                {/* <View>
-                  <Text style={styles.addText}></Text>
-                </View> */}
               </Pressable>
+              <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>x</Text>
+              </Pressable>
+            </KeyboardAvoidingView>
+          </View>
+        </View>
+      </Modal>
+      {/* + Button */}
+      <View style={styles.bottomPlace}>
+        <Pressable
+          style={[styles.button, styles.buttonOpen]}
+          onPress={() => setModalVisible(true)}
+        >
+          <Text style={styles.textStyle}>+</Text>
+        </Pressable>
+      </View>
+      
+    </View>
+  );
+}
+
+export const Orders = () => {
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [store, setStore] = useState();
+  const [storeItems, setStoreItems] = useState([]);
+
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [dateItems, setDateItems] = useState([new Date(), new Date()]);
+  
+  const onChange1 = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate)
+    setDateItems([currentDate, dateItems[1]]);
+  };
+
+  const onChange2 = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate)
+    setDateItems([dateItems[0], currentDate]);
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+
+  const showDatepicker = () => {
+    showMode('date');
+  };
+
+  const showTimepicker = () => {
+    showMode('time');
+  };
+
+  const haddleAddTask = () => {
+    Keyboard.dismiss()
+    setTaskItems([...taskItems, task])
+    setStoreItems([...storeItems, store])
+    setStore(null);
+    setTask(null);
+  }  
+
+  const completeTask = (index) => {
+    let itemsCopy = [...taskItems];
+    let storesCopy = [...storeItems];
+    itemsCopy.splice(index, 1);
+    storesCopy.splice(index, 1);
+    setTaskItems(itemsCopy);
+    setStoreItems(storesCopy);
+  }
+
+  const multFuncEx = () => {
+    haddleAddTask();
+    setModalVisible(!setModalVisible)
+  }
+
+  const iconsNames = ['albert', 'amazon', 'notFound']
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.tasksWrapper}>
+        <ScrollView style={styles.scrollView}>
+          <View >
+            <View style={styles.item}>
+              {
+                taskItems.map((item, index) => {
+                  return (
+                    <TouchableOpacity key={index} onPress={() => completeTask(index)}>
+                      <Order 
+                        text={item} 
+                        date1={dateItems[0].getDate() + '-' + dateItems[0].getMonth()} 
+                        date2={dateItems[1].getDate() + '-' + dateItems[1].getMonth()}
+                        image={storeItems[index].split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} />
+                    </TouchableOpacity>
+                  )
+                })
+              }
+            </View>  
+          </View>
+        </ScrollView>
+      </View>
+      {/* Create task popup */}
+      <Modal
+        animationType='slide'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Create Order</Text>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+              <TextInput style={styles.input} placeholder={'Write store name'} value={store} onChangeText={o => setStore(o)} />
+              <View>
+                <Text>Order Date: {date.toLocaleString()}</Text>
+                <DateTimePicker
+                  testID="dateTimePicker1"
+                  value={dateItems[0]}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={onChange1}
+                />
+                <Text>Estimate Arrival: </Text>
+                <DateTimePicker
+                  testID="dateTimePicker2"
+                  value={dateItems[1]}
+                  mode={mode}
+                  is24Hour={true}
+                  onChange={onChange2}
+                  minimumDate={dateItems[0]}
+                />
+              </View>
+              <View>
+              <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
+                <Text style={styles.textStyle}>+</Text>
+              </Pressable>
+              <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>x</Text>
+              </Pressable>
+              </View>
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -112,15 +258,59 @@ function App(props) {
   );
 }
 
-export default App;
+function CustomDrawerContent(props) {
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+      <DrawerItem
+        label="Close drawer"
+        onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
+      />
+      <DrawerItem
+        label="Toggle drawer"
+        onPress={() => props.navigation.dispatch(DrawerActions.toggleDrawer())}
+      />
+    </DrawerContentScrollView>
+  );
+}
+
+const Drawer = createDrawerNavigator();
+
+function MyDrawer() {
+  return (
+    <Drawer.Navigator
+      // useLegacyImplementation = {false}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      <Drawer.Screen name="Tasks" component={Tasks} />
+      <Drawer.Screen name="Orders" component={Orders} />
+    </Drawer.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <MyDrawer>
+      </MyDrawer>
+    </NavigationContainer>
+  );
+}
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 30,
     backgroundColor: 'white',
   },
+  scrollView: {
+    paddingTop: 60,
+    marginHorizontal: 0,
+  },
   tasksWrapper: {
-    paddingTop: 80,
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
     paddingHorizontal: 20,
   },
   sectionTitle: {
@@ -128,7 +318,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   item: {
-    marginTop: 30,
+    flex: 1,
+    marginTop: -70,
   },
   createTask: {
     backgroundColor: 'red',
@@ -206,7 +397,23 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   buttonSaveTask: {
-    backgroundColor: "green"
+    width: 150,
+    height: 60,
+    borderRadius: 5,
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    position: 'relative',
+    marginTop: 450,
+    marginLeft: 150,
+  },
+  buttonCloseTask: {
+    width: 150,
+    height: 60,
+    borderRadius: 5,
+    bottom: 0,
+    backgroundColor: 'red',
+    position: 'absolute',
+    justifyContent: 'center'
   },
   textStyle: {
     color: "white",

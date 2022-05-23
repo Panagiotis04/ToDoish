@@ -10,6 +10,8 @@ import {
         Pressable,
         Keyboard,
         TouchableOpacity,
+        Image,
+        Ionicons,
 
        } from 'react-native';
 import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
@@ -25,23 +27,47 @@ import Order from './Order';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import { set } from 'react-native-reanimated';
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState();
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isDisabled, setDisabled] = useState(true)
+  const [ergent, setErgent] = useState('');
+  const [ergentItems, setErgentItems] = useState([]);
+  const [important, setImportant] = useState('');
+  const [importantItems, setImportantItems] = useState([]);
+  const [score, setScore] = useState(0);
+  const [scoreItems, setScoreItems] = useState([]);
+
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
+    setErgentItems([...ergentItems, ergent])
+    setImportantItems([...importantItems, important])
+    if(ergent === 'ergent' && important === 'important')
+      setScore(4)
+    else
+      setScore(-1)
+    setErgent(null)
+    setImportant(null)
     setTask(null);
   }  
 
   const completeTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy);
+    let itemsCopy = [...taskItems]
+    let ergentCopy = [...ergentItems]
+    let importantCopy = [...importantItems]
+    let scoreCopy = [...scoreItems]
+    itemsCopy.splice(index, 1)
+    ergentCopy.splice(index, 1)
+    importantCopy.splice(index, 1)
+    scoreCopy.splice(index, 1)
+    setTaskItems(itemsCopy)
+    setErgentItems(ergentCopy)
+    setImportantItems(importantCopy)
+    setScoreItems(scoreCopy)
   }
 
   const multFuncEx = () => {
@@ -60,7 +86,13 @@ function Tasks({ navigation }) {
               taskItems.map((item, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                    <Task text={item} image={item.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} /> 
+                    <Task 
+                      text={item} 
+                      image={item.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
+                      ergent={ergentItems[index]}
+                      important={importantItems[index]}
+                    /> 
+
                   </TouchableOpacity>
                 )
               })
@@ -85,6 +117,14 @@ function Tasks({ navigation }) {
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
               <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+
+              <Pressable style={styles.buttonCloseTask} onPress={() => setErgent('ergent')}>
+                <Image source={require('./assets/ergent.png')} style={styles.ergentIcon} />
+              </Pressable>
+              <Pressable style={styles.buttonCloseTask} onPress={() => setImportant('important')}>
+                <Image source={require('./assets/important.png')} style={styles.importantIcon} />
+              </Pressable>
+
               <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
                 <Text style={styles.textStyle}>+</Text>
               </Pressable>
@@ -279,10 +319,9 @@ const Drawer = createDrawerNavigator();
 function MyDrawer() {
   return (
     <Drawer.Navigator
-      // useLegacyImplementation = {false}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Tasks" component={Tasks} />
+      <Drawer.Screen name="Tasks" component={Tasks}/>
       <Drawer.Screen name="Orders" component={Orders} />
     </Drawer.Navigator>
   );
@@ -427,4 +466,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: "center"
   },
+  importantIcon: {
+    marginBottom: 200,
+    position: 'relative',
+    height: 50,
+    width: 50,
+  },
+  ergentIcon: {
+    marginBottom: 200,
+    marginLeft: 80,
+    position: 'relative',
+    height: 50,
+    width: 50,
+  }
 });

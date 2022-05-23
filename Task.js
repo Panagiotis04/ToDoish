@@ -14,12 +14,17 @@ const Task = (props) => {
     iconMap.set('gym', require('./assets/gym.png'));
     iconMap.set('notes', require('./assets/notes.png'))
     iconMap.set('notFound', require('./assets/empty-set.png'))
+    iconMap.set('ergent', require('./assets/ergent.png'))
+    iconMap.set('important', require('./assets/important.png'))
+    iconMap.set('notImportant', require('./assets/notImportant.png'))
 
     return (
         <View style={styles.item}>
             <View style={styles.itemLeft}>
                 <Image source={iconMap.has(props.image) ? iconMap.get(props.image) : iconMap.get('notFound')} style={styles.icon} />
                 <Text style={styles.itemTitle}>{props.text}</Text>
+                <Image source={iconMap.get(props.ergent)} style={styles.icon} />
+                <Image source={iconMap.get(props.important)} style={styles.icon} />
             </View>
             <View style={styles.circular}></View>
         </View>

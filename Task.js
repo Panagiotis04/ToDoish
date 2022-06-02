@@ -25,6 +25,7 @@ const Task = (props) => {
                 <Text style={styles.itemTitle}>{props.text}</Text>
                 <Image source={iconMap.get(props.ergent)} style={styles.icon} />
                 <Image source={iconMap.get(props.important)} style={styles.icon} />
+                <Text style={styles.itemTitle}>{props.points}</Text>
             </View>
             <View style={styles.circular}></View>
         </View>

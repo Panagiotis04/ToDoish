@@ -30,49 +30,55 @@ import { StatusBar } from 'expo-status-bar';
 import { set } from 'react-native-reanimated';
 
 function Tasks({ navigation }) {
-  const [task, setTask] = useState();
+  const [task, setTask] = useState({
+    title: "",
+    important: false,
+    ergent: false,
+    points: 1,
+  });
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [ergent, setErgent] = useState('');
-  const [ergentItems, setErgentItems] = useState([]);
-  const [important, setImportant] = useState('');
-  const [importantItems, setImportantItems] = useState([]);
-  const [score, setScore] = useState(0);
   const [scoreItems, setScoreItems] = useState([]);
 
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
-    setErgentItems([...ergentItems, ergent])
-    setImportantItems([...importantItems, important])
-    if(ergent === 'ergent' && important === 'important')
-      setScore(4)
-    else
-      setScore(-1)
-    setErgent(null)
-    setImportant(null)
-    setTask(null);
+    setTask({
+      title: "",
+      important: false,
+      ergent: false,
+      points: 1,
+    })
   }  
 
   const completeTask = (index) => {
     let itemsCopy = [...taskItems]
-    let ergentCopy = [...ergentItems]
-    let importantCopy = [...importantItems]
-    let scoreCopy = [...scoreItems]
     itemsCopy.splice(index, 1)
-    ergentCopy.splice(index, 1)
-    importantCopy.splice(index, 1)
-    scoreCopy.splice(index, 1)
     setTaskItems(itemsCopy)
-    setErgentItems(ergentCopy)
-    setImportantItems(importantCopy)
-    setScoreItems(scoreCopy)
   }
 
   const multFuncEx = () => {
     haddleAddTask();
     setModalVisible(!setModalVisible)
+  }
+
+  const updateTitle = (t) => {
+    setTask(previousState => {
+      return { ...previousState, title: t }
+    });
+  }
+
+  const updateErgency = (e, p) => {
+    setTask(previousState => {
+      return { ...previousState, ergent: !e, points: !e === true ? p + 1 : p - 1}
+    });
+  }
+
+  const updateImportance = (i, p) => {
+    setTask(previousState => {
+      return { ...previousState, important: !i, points: !i === true ? p + 2 : p - 2}
+    });
   }
 
   const iconsNames = ['biking', 'boxing', 'gym', 'notes', 'notFound']
@@ -82,17 +88,24 @@ function Tasks({ navigation }) {
       <View style={styles.tasksWrapper}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.item}>
-            {
-              taskItems.map((item, index) => {
+            { 
+              taskItems.sort(function(a, b) {
+                if(a.points > b.points) 
+                  return -1;
+                else 
+                  return 1;
+
+              })
+              .map((item, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
-                      text={item} 
-                      image={item.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
-                      ergent={ergentItems[index]}
-                      important={importantItems[index]}
+                      text={item.title} 
+                      image={item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
+                      ergent={item.ergent === true ? "ergent" : "notFound"}
+                      important={item.important === true ? "important" : "notFound"}
+                      points={item.points}
                     /> 
-
                   </TouchableOpacity>
                 )
               })
@@ -116,13 +129,13 @@ function Tasks({ navigation }) {
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
+              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => updateTitle(t)} />
 
-              <Pressable style={styles.buttonCloseTask} onPress={() => setErgent('ergent')}>
-                <Image source={require('./assets/ergent.png')} style={styles.ergentIcon} />
+              <Pressable style={styles.buttonCloseTask} onPress={() => updateErgency(task.ergent, task.points)}>
+                <Image source={task.ergent === true ? require('./assets/ergent.png') : require('./assets/notErgent.png')} style={styles.ergentIcon} />
               </Pressable>
-              <Pressable style={styles.buttonCloseTask} onPress={() => setImportant('important')}>
-                <Image source={require('./assets/important.png')} style={styles.importantIcon} />
+              <Pressable style={styles.buttonCloseTask} onPress={() => updateImportance(task.important, task.points)}>
+                <Image source={task.important === true ? require('./assets/important.png') : require('./assets/notImportant.png')} style={styles.importantIcon} />
               </Pressable>
 
               <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>

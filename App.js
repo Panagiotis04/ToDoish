@@ -128,22 +128,30 @@ function Tasks({ navigation }) {
             <Text style={styles.modalText}>Create Task</Text>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.keyboardView}
             >
-              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => updateTitle(t)} />
+              <View style={styles.inputView}>
+                <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => updateTitle(t)} />
+              </View>
 
-              <Pressable style={styles.buttonCloseTask} onPress={() => updateErgency(task.ergent, task.points)}>
-                <Image source={task.ergent === true ? require('./assets/ergent.png') : require('./assets/notErgent.png')} style={styles.ergentIcon} />
-              </Pressable>
-              <Pressable style={styles.buttonCloseTask} onPress={() => updateImportance(task.important, task.points)}>
-                <Image source={task.important === true ? require('./assets/important.png') : require('./assets/notImportant.png')} style={styles.importantIcon} />
-              </Pressable>
+              <View style={styles.ergentImportantView}>
+                <Pressable style={styles.ergentPressable} onPress={() => updateErgency(task.ergent, task.points)}>
+                  <Image source={task.ergent === true ? require('./assets/ergent.png') : require('./assets/notErgent.png')} style={styles.ergentIcon} />
+                </Pressable>
+                <Pressable style={styles.importantPressable} onPress={() => updateImportance(task.important, task.points)}>
+                  <Image source={task.important === true ? require('./assets/important.png') : require('./assets/notImportant.png')} style={styles.importantIcon} />
+                </Pressable>
+              </View>
 
-              <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
-                <Text style={styles.textStyle}>+</Text>
-              </Pressable>
-              <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>x</Text>
-              </Pressable>
+              <View style={styles.taskCreationView}>
+                <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
+                  <Text style={styles.textStyle}>+</Text>
+                </Pressable>
+                <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
+                  <Text style={styles.textStyle}>x</Text>
+                </Pressable>
+              </View>
+              
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -388,6 +396,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     width: 250,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
     backgroundColor: '#FFF',
     borderRadius: 60,
     borderColor: '#C0C0C0',
@@ -410,7 +421,7 @@ const styles = StyleSheet.create({
     marginLeft: '80%',
     bottom: 20
   },
-  centeredView: {
+ew: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: "center",
@@ -420,6 +431,7 @@ const styles = StyleSheet.create({
     margin: 40,
     width: '90%',
     height: '90%',
+    alignItems: 'center',
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
@@ -449,23 +461,23 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
   },
   buttonSaveTask: {
-    width: 150,
+    width: 60,
     height: 60,
     borderRadius: 5,
     backgroundColor: 'green',
     justifyContent: 'center',
     position: 'relative',
-    marginTop: 450,
-    marginLeft: 150,
+    // marginTop: 450,
+    // marginLeft: 150,
   },
   buttonCloseTask: {
-    width: 150,
+    width: 60,
     height: 60,
     borderRadius: 5,
     bottom: 0,
     backgroundColor: 'red',
-    position: 'absolute',
-    justifyContent: 'center'
+    position: 'relative',
+    justifyContent: 'center',
   },
   textStyle: {
     color: "white",
@@ -477,19 +489,50 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: "center"
+    textAlign: "center",
+    alignItems: 'center',
+  },
+  inputView: {
+    position: 'relative',
   },
   importantIcon: {
-    marginBottom: 200,
     position: 'relative',
     height: 50,
     width: 50,
   },
+  importantPressable: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
   ergentIcon: {
-    marginBottom: 200,
-    marginLeft: 80,
     position: 'relative',
     height: 50,
     width: 50,
-  }
+    justifyContent: 'center',
+  },
+  ergentPressable: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  keyboardView: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: 50,
+  },
+  ergentImportantView: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 20,
+  },  
+  taskCreationView: {
+    position: 'relative',
+    justifyContent: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 20,
+  },
+
 });

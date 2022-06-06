@@ -11,23 +11,27 @@ import {
         Keyboard,
         TouchableOpacity,
         Image,
-        Ionicons,
+
 
        } from 'react-native';
-import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from '@react-navigation/drawer';
+// import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
+// import {
+//   createDrawerNavigator,
+//   DrawerContentScrollView,
+//   DrawerItemList,
+//   DrawerItem,
+// } from '@react-navigation/drawer';
 import Task from './Task';
 import Order from './Order';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
-import { set } from 'react-native-reanimated';
+import { NavigationContainer, DrawerActions } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Ionicons } from '@expo/vector-icons';
+
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState({
@@ -38,12 +42,14 @@ function Tasks({ navigation }) {
   });
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [score, setScore] = useState(0);
   const [scoreItems, setScoreItems] = useState([]);
 
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
+    setScoreItems([...scoreItems, score])
     setTask({
       title: "",
       important: false,
@@ -54,6 +60,8 @@ function Tasks({ navigation }) {
 
   const completeTask = (index) => {
     let itemsCopy = [...taskItems]
+    setScore(score + taskItems[index].points)
+    navigation.setOptions({headerRight: () => <Text>{score}</Text>})
     itemsCopy.splice(index, 1)
     setTaskItems(itemsCopy)
   }
@@ -102,8 +110,8 @@ function Tasks({ navigation }) {
                     <Task 
                       text={item.title} 
                       image={item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
-                      ergent={item.ergent === true ? "ergent" : "notFound"}
-                      important={item.important === true ? "important" : "notFound"}
+                      ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
+                      important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}
                     /> 
                   </TouchableOpacity>
@@ -319,30 +327,54 @@ export const Orders = () => {
   );
 }
 
-function CustomDrawerContent(props) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItemList {...props} />
-      <DrawerItem
-        label="Close drawer"
-        onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
-      />
-      <DrawerItem
-        label="Toggle drawer"
-        onPress={() => props.navigation.dispatch(DrawerActions.toggleDrawer())}
-      />
-    </DrawerContentScrollView>
-  );
-}
+// function CustomDrawerContent(props) {
+//   return (
+//     <DrawerContentScrollView {...props}>
+//       <DrawerItemList {...props} />
+//       <DrawerItem
+//         label="Close drawer"
+//         onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
+//       />
+//       <DrawerItem
+//         label="Toggle drawer"
+//         onPress={() => props.navigation.dispatch(DrawerActions.toggleDrawer())}
+//       />
+//     </DrawerContentScrollView>
+//   );
+// }
 
+const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      // drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Tasks" component={Tasks}/>
+      <Drawer.Screen name="Homestack" component={Tasks}  options={({navigation}) => ({
+      title: "Tasks",
+      headerStyle: {
+        backgroundColor: "rgb(0, 145, 234)",
+      },
+      headerTintColor: "white",
+      headerTitleStyle: {
+        fontWeight: "bold",
+        color: "white",
+      },
+      headerRight: (t) => (
+        <View>
+          {/* <Ionicons
+            name={'thumbs-up'}
+            size={24}
+            style={{ marginRight: 20 }}
+            onPress={() =>
+              navigation.dispatch(DrawerActions.toggleDrawer())
+            }
+          /> */}
+          <Text>{t.text}</Text>
+        </View>
+        ),
+    })} initialParams={{id: "Test 1"}}/>
       <Drawer.Screen name="Orders" component={Orders} />
     </Drawer.Navigator>
   );
@@ -421,7 +453,7 @@ const styles = StyleSheet.create({
     marginLeft: '80%',
     bottom: 20
   },
-ew: {
+  centeredView: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: "center",
@@ -459,6 +491,10 @@ ew: {
   },
   buttonClose: {
     backgroundColor: "red",
+  },
+  headerButton: {
+    width: 1,
+    height: 1,
   },
   buttonSaveTask: {
     width: 60,

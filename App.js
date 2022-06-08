@@ -59,9 +59,14 @@ function Tasks({ navigation }) {
   }  
 
   const completeTask = (index) => {
+    setScore(taskItems[index].points + score)
+    navigation.setOptions({headerRight: () =>
+      <View style={styles.scoreView}>
+        <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
+        <Text style={{fontWeight: 'bold'}}>{taskItems[index].points + score}</Text>
+      </View>
+    })
     let itemsCopy = [...taskItems]
-    setScore(score + taskItems[index].points)
-    navigation.setOptions({headerRight: () => <Text>{score}</Text>})
     itemsCopy.splice(index, 1)
     setTaskItems(itemsCopy)
   }
@@ -361,17 +366,11 @@ function MyDrawer() {
         fontWeight: "bold",
         color: "white",
       },
-      headerRight: (t) => (
-        <View>
-          {/* <Ionicons
-            name={'thumbs-up'}
-            size={24}
-            style={{ marginRight: 20 }}
-            onPress={() =>
-              navigation.dispatch(DrawerActions.toggleDrawer())
-            }
-          /> */}
-          <Text>{t.text}</Text>
+      headerLeft: () => <Text>7</Text>,
+      headerRight: () => (
+        <View style={styles.scoreView}>
+          <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
+          <Text>0</Text>
         </View>
         ),
     })} initialParams={{id: "Test 1"}}/>
@@ -569,6 +568,15 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     padding: 20,
+  },
+  scoreView: {
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 0,
+    marginLeft: 10,
   },
 
 });

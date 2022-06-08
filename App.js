@@ -10,43 +10,83 @@ import {
         Pressable,
         Keyboard,
         TouchableOpacity,
+        Image,
+
 
        } from 'react-native';
-import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from '@react-navigation/drawer';
+// import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
+// import {
+//   createDrawerNavigator,
+//   DrawerContentScrollView,
+//   DrawerItemList,
+//   DrawerItem,
+// } from '@react-navigation/drawer';
 import Task from './Task';
 import Order from './Order';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer, DrawerActions } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { Ionicons } from '@expo/vector-icons';
+
 
 function Tasks({ navigation }) {
-  const [task, setTask] = useState();
+  const [task, setTask] = useState({
+    title: "",
+    important: false,
+    ergent: false,
+    points: 1,
+  });
   const [taskItems, setTaskItems] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [isDisabled, setDisabled] = useState(true)
+  const [score, setScore] = useState(0);
+  const [scoreItems, setScoreItems] = useState([]);
+
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
-    setTask(null);
+    setScoreItems([...scoreItems, score])
+    setTask({
+      title: "",
+      important: false,
+      ergent: false,
+      points: 1,
+    })
   }  
 
   const completeTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy);
+    let itemsCopy = [...taskItems]
+    setScore(score + taskItems[index].points)
+    navigation.setOptions({headerRight: () => <Text>{score}</Text>})
+    itemsCopy.splice(index, 1)
+    setTaskItems(itemsCopy)
   }
 
   const multFuncEx = () => {
     haddleAddTask();
     setModalVisible(!setModalVisible)
+  }
+
+  const updateTitle = (t) => {
+    setTask(previousState => {
+      return { ...previousState, title: t }
+    });
+  }
+
+  const updateErgency = (e, p) => {
+    setTask(previousState => {
+      return { ...previousState, ergent: !e, points: !e === true ? p + 1 : p - 1}
+    });
+  }
+
+  const updateImportance = (i, p) => {
+    setTask(previousState => {
+      return { ...previousState, important: !i, points: !i === true ? p + 2 : p - 2}
+    });
   }
 
   const iconsNames = ['biking', 'boxing', 'gym', 'notes', 'notFound']
@@ -56,11 +96,24 @@ function Tasks({ navigation }) {
       <View style={styles.tasksWrapper}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.item}>
-            {
-              taskItems.map((item, index) => {
+            { 
+              taskItems.sort(function(a, b) {
+                if(a.points > b.points) 
+                  return -1;
+                else 
+                  return 1;
+
+              })
+              .map((item, index) => {
                 return (
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
-                    <Task text={item} image={item.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} /> 
+                    <Task 
+                      text={item.title} 
+                      image={item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
+                      ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
+                      important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
+                      points={item.points}
+                    /> 
                   </TouchableOpacity>
                 )
               })
@@ -83,14 +136,30 @@ function Tasks({ navigation }) {
             <Text style={styles.modalText}>Create Task</Text>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.keyboardView}
             >
-              <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => setTask(t)} />
-              <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
-                <Text style={styles.textStyle}>+</Text>
-              </Pressable>
-              <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>x</Text>
-              </Pressable>
+              <View style={styles.inputView}>
+                <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={t => updateTitle(t)} />
+              </View>
+
+              <View style={styles.ergentImportantView}>
+                <Pressable style={styles.ergentPressable} onPress={() => updateErgency(task.ergent, task.points)}>
+                  <Image source={task.ergent === true ? require('./assets/ergent.png') : require('./assets/notErgent.png')} style={styles.ergentIcon} />
+                </Pressable>
+                <Pressable style={styles.importantPressable} onPress={() => updateImportance(task.important, task.points)}>
+                  <Image source={task.important === true ? require('./assets/important.png') : require('./assets/notImportant.png')} style={styles.importantIcon} />
+                </Pressable>
+              </View>
+
+              <View style={styles.taskCreationView}>
+                <Pressable style={styles.buttonSaveTask} onPress={() => multFuncEx()}>
+                  <Text style={styles.textStyle}>+</Text>
+                </Pressable>
+                <Pressable style={styles.buttonCloseTask} onPress={() => setModalVisible(!modalVisible)}>
+                  <Text style={styles.textStyle}>x</Text>
+                </Pressable>
+              </View>
+              
             </KeyboardAvoidingView>
           </View>
         </View>
@@ -258,31 +327,54 @@ export const Orders = () => {
   );
 }
 
-function CustomDrawerContent(props) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItemList {...props} />
-      <DrawerItem
-        label="Close drawer"
-        onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
-      />
-      <DrawerItem
-        label="Toggle drawer"
-        onPress={() => props.navigation.dispatch(DrawerActions.toggleDrawer())}
-      />
-    </DrawerContentScrollView>
-  );
-}
+// function CustomDrawerContent(props) {
+//   return (
+//     <DrawerContentScrollView {...props}>
+//       <DrawerItemList {...props} />
+//       <DrawerItem
+//         label="Close drawer"
+//         onPress={() => props.navigation.dispatch(DrawerActions.closeDrawer())}
+//       />
+//       <DrawerItem
+//         label="Toggle drawer"
+//         onPress={() => props.navigation.dispatch(DrawerActions.toggleDrawer())}
+//       />
+//     </DrawerContentScrollView>
+//   );
+// }
 
+const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 function MyDrawer() {
   return (
     <Drawer.Navigator
-      // useLegacyImplementation = {false}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      // drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="Tasks" component={Tasks} />
+      <Drawer.Screen name="Homestack" component={Tasks}  options={({navigation}) => ({
+      title: "Tasks",
+      headerStyle: {
+        backgroundColor: "rgb(0, 145, 234)",
+      },
+      headerTintColor: "white",
+      headerTitleStyle: {
+        fontWeight: "bold",
+        color: "white",
+      },
+      headerRight: (t) => (
+        <View>
+          {/* <Ionicons
+            name={'thumbs-up'}
+            size={24}
+            style={{ marginRight: 20 }}
+            onPress={() =>
+              navigation.dispatch(DrawerActions.toggleDrawer())
+            }
+          /> */}
+          <Text>{t.text}</Text>
+        </View>
+        ),
+    })} initialParams={{id: "Test 1"}}/>
       <Drawer.Screen name="Orders" component={Orders} />
     </Drawer.Navigator>
   );
@@ -336,6 +428,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 15,
     width: 250,
+    alignItems: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
     backgroundColor: '#FFF',
     borderRadius: 60,
     borderColor: '#C0C0C0',
@@ -368,6 +463,7 @@ const styles = StyleSheet.create({
     margin: 40,
     width: '90%',
     height: '90%',
+    alignItems: 'center',
     backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
@@ -396,24 +492,28 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: "red",
   },
+  headerButton: {
+    width: 1,
+    height: 1,
+  },
   buttonSaveTask: {
-    width: 150,
+    width: 60,
     height: 60,
     borderRadius: 5,
     backgroundColor: 'green',
     justifyContent: 'center',
     position: 'relative',
-    marginTop: 450,
-    marginLeft: 150,
+    // marginTop: 450,
+    // marginLeft: 150,
   },
   buttonCloseTask: {
-    width: 150,
+    width: 60,
     height: 60,
     borderRadius: 5,
     bottom: 0,
     backgroundColor: 'red',
-    position: 'absolute',
-    justifyContent: 'center'
+    position: 'relative',
+    justifyContent: 'center',
   },
   textStyle: {
     color: "white",
@@ -425,6 +525,50 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: "center"
+    textAlign: "center",
+    alignItems: 'center',
   },
+  inputView: {
+    position: 'relative',
+  },
+  importantIcon: {
+    position: 'relative',
+    height: 50,
+    width: 50,
+  },
+  importantPressable: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  ergentIcon: {
+    position: 'relative',
+    height: 50,
+    width: 50,
+    justifyContent: 'center',
+  },
+  ergentPressable: {
+    position: 'relative',
+    justifyContent: 'center',
+  },
+  keyboardView: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: 50,
+  },
+  ergentImportantView: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: 20,
+  },  
+  taskCreationView: {
+    position: 'relative',
+    justifyContent: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 20,
+  },
+
 });

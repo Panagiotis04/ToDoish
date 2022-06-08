@@ -15,3 +15,6 @@ Since I have used some icons for this app I would like to attribute their creato
 - <a href="https://www.flaticon.com/free-icons/boxing" title="boxing icons">Boxing icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/empty-set" title="empty set icons">Empty set icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/study" title="study icons">Study icons created by photo3idea_studio - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/warning" title="warning icons">Warning icons created by Flat Icons - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/alert" title="alert icons">Alert icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/notification" title="notification icons">Notification icons created by Freepik - Flaticon</a>

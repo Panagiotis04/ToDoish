@@ -40,11 +40,66 @@ function Tasks({ navigation }) {
   const [score, setScore] = useState(0);
   const [scoreItems, setScoreItems] = useState([]);
 
+  const TASK_1 = {
+    title: 'Task 1',
+    important: true,
+    ergent: false,
+    points: 2
+  }
+
+  const getMyObject = async () => {
+    try {
+      
+      const jsonValue = await AsyncStorage.getItem('@task1')
+      console.log('I read this: ' + jsonValue)
+      return JSON.parse(jsonValue)
+    } catch(e) {
+      // read error
+    }
+    console.log('read.')
+  }
+
+  // const getMyStringValue = async () => {
+  //   try {
+  //     return await AsyncStorage.getItem('@key')
+  //   } catch(e) {
+  //     // read error
+  //   }
+
+  //   console.log('Done.')
+  // }
+
+  const setObjectValue = async (value) => {
+    try {
+      const jsonValue = JSON.stringify(value)
+      console.log(jsonValue)
+      if(jsonValue !== null) await AsyncStorage.setItem('task1', value)
+    } catch(e) {
+      // save error
+    }
+  
+    console.log('saved.')
+  }
+
+  // const setStringValue = async (value) => {
+  //   try {
+  //     await AsyncStorage.setItem('key', value)
+  //   } catch(e) {
+  //     // save error
+  //   }
+  
+  //   console.log('Done.')
+  // }
+
+  useEffect(() => {
+    getMyObject()
+  }, [])
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
     setScoreItems([...scoreItems, score])
+    setObjectValue(task)
     setTask({
       title: "",
       important: false,
@@ -68,6 +123,7 @@ function Tasks({ navigation }) {
 
   const multFuncEx = () => {
     haddleAddTask();
+
     setModalVisible(!setModalVisible)
   }
 

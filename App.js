@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { 
         View, 
         Text, 
@@ -14,13 +14,7 @@ import {
 
 
        } from 'react-native';
-// import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
-// import {
-//   createDrawerNavigator,
-//   DrawerContentScrollView,
-//   DrawerItemList,
-//   DrawerItem,
-// } from '@react-navigation/drawer';
+
 import Task from './Task';
 import Order from './Order';
 
@@ -31,7 +25,8 @@ import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState({

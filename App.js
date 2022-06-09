@@ -84,13 +84,13 @@ function Tasks({ navigation }) {
 
   const updateErgency = (e, p) => {
     setTask(previousState => {
-      return { ...previousState, ergent: !e, points: !e === true ? p + 1 : p - 1}
+      return { ...previousState, ergent: !e, points: !e === true ? p + 2 : p - 2}
     });
   }
 
   const updateImportance = (i, p) => {
     setTask(previousState => {
-      return { ...previousState, important: !i, points: !i === true ? p + 2 : p - 2}
+      return { ...previousState, important: !i, points: !i === true ? p + 1 : p - 1}
     });
   }
 
@@ -366,11 +366,10 @@ function MyDrawer() {
         fontWeight: "bold",
         color: "white",
       },
-      headerLeft: () => <Text>7</Text>,
       headerRight: () => (
         <View style={styles.scoreView}>
           <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
-          <Text>0</Text>
+          <Text style={{fontWeight: 'bold'}}>0</Text>
         </View>
         ),
     })} initialParams={{id: "Test 1"}}/>

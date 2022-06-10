@@ -39,17 +39,11 @@ function Tasks({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [score, setScore] = useState(0);
   const [scoreItems, setScoreItems] = useState([]);
-
-  const TASK_1 = {
-    title: 'Task 1',
-    important: true,
-    ergent: false,
-    points: 2
-  }
+  const [key, setKey] = useState(-1);
+  const [keyItems, setKeyItems] = useState([]);
 
   const getMyObject = async () => {
     try {
-      
       const jsonValue = await AsyncStorage.getItem('task1')
       console.log('I read this: ' + jsonValue)
       setTaskItems([JSON.parse(jsonValue)])
@@ -57,40 +51,32 @@ function Tasks({ navigation }) {
     } catch(e) {
       // read error
     }
-    console.log('read.')
+      console.log('read.')
   }
 
-  // const getMyStringValue = async () => {
-  //   try {
-  //     return await AsyncStorage.getItem('@key')
-  //   } catch(e) {
-  //     // read error
-  //   }
-
-  //   console.log('Done.')
+  // const items = async () => {
+  //   const fieldValue = await AsyncStorage.getItem('task1')
+  //   return fieldValue === null
+  //     ? []
+  //     : JSON.parse(fieldValue);
   // }
+
 
   const setObjectValue = async (value) => {
     try {
-      const jsonValue = JSON.stringify(value)
-      console.log(jsonValue)
-      if(jsonValue !== null) await AsyncStorage.setItem('task1', jsonValue)
+      // const jsonValue = JSON.stringify(value)
+
+      var showList = JSON.parse(localStorage.getItem('showList') || "[]");
+      console.log(value)
+      showList.push(value);
+
+      await AsyncStorage.setItem('task1', JSON.stringify(showList));
     } catch(e) {
       // save error
     }
-  
+
     console.log('saved.')
   }
-
-  // const setStringValue = async (value) => {
-  //   try {
-  //     await AsyncStorage.setItem('key', value)
-  //   } catch(e) {
-  //     // save error
-  //   }
-  
-  //   console.log('Done.')
-  // }
 
   useEffect(() => {
     getMyObject()

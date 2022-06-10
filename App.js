@@ -50,8 +50,9 @@ function Tasks({ navigation }) {
   const getMyObject = async () => {
     try {
       
-      const jsonValue = await AsyncStorage.getItem('@task1')
+      const jsonValue = await AsyncStorage.getItem('task1')
       console.log('I read this: ' + jsonValue)
+      setTaskItems([JSON.parse(jsonValue)])
       return JSON.parse(jsonValue)
     } catch(e) {
       // read error
@@ -73,7 +74,7 @@ function Tasks({ navigation }) {
     try {
       const jsonValue = JSON.stringify(value)
       console.log(jsonValue)
-      if(jsonValue !== null) await AsyncStorage.setItem('task1', value)
+      if(jsonValue !== null) await AsyncStorage.setItem('task1', jsonValue)
     } catch(e) {
       // save error
     }

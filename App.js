@@ -42,51 +42,52 @@ function Tasks({ navigation }) {
   const [key, setKey] = useState(-1);
   const [keyItems, setKeyItems] = useState([]);
 
-  const getMyObject = async () => {
+  const readTasks = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('task1')
+      const jsonValue = await AsyncStorage.getItem('showList')
       console.log('I read this: ' + jsonValue)
-      setTaskItems([JSON.parse(jsonValue)])
+      setTaskItems(JSON.parse(jsonValue))
       return JSON.parse(jsonValue)
     } catch(e) {
-      // read error
+      console.log(e)
     }
       console.log('read.')
   }
 
-  // const items = async () => {
-  //   const fieldValue = await AsyncStorage.getItem('task1')
-  //   return fieldValue === null
-  //     ? []
-  //     : JSON.parse(fieldValue);
-  // }
-
-
-  const setObjectValue = async (value) => {
+  const saveTask = async (value) => {
     try {
-      // const jsonValue = JSON.stringify(value)
-
-      var showList = JSON.parse(localStorage.getItem('showList') || "[]");
-      console.log(value)
+      var showList = JSON.parse(await AsyncStorage.getItem('showList') || "[]");
       showList.push(value);
-
-      await AsyncStorage.setItem('task1', JSON.stringify(showList));
+      
+      await AsyncStorage.setItem('showList', JSON.stringify(showList));
     } catch(e) {
-      // save error
+      console.log(e)
     }
-
     console.log('saved.')
   }
 
+  const clearTask = async (index) => {
+    try {
+      var showList = JSON.parse(await AsyncStorage.getItem('showList') || "[]");
+      let itemsCopy = [...showList]
+      itemsCopy.splice(index, 1)
+      
+      await AsyncStorage.setItem('showList', JSON.stringify(itemsCopy));
+    } catch(e) {
+      console.log(e)
+    }
+    console.log('saved.')
+  } 
+
   useEffect(() => {
-    getMyObject()
+    readTasks()
   }, [])
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
     setScoreItems([...scoreItems, score])
-    setObjectValue(task)
+    saveTask(task)
     setTask({
       title: "",
       important: false,
@@ -103,6 +104,7 @@ function Tasks({ navigation }) {
         <Text style={{fontWeight: 'bold'}}>{taskItems[index].points + score}</Text>
       </View>
     })
+    clearTask(index)
     let itemsCopy = [...taskItems]
     itemsCopy.splice(index, 1)
     setTaskItems(itemsCopy)
@@ -152,7 +154,7 @@ function Tasks({ navigation }) {
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
                       text={item.title} 
-                      image={item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
+                      image={(item.title !== undefined) ? item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase() : "biking"} 
                       ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
                       important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}

@@ -44,10 +44,18 @@ function Tasks({ navigation }) {
 
   const readTasks = async () => {
     try {
-      const jsonValue = await AsyncStorage.getItem('showList')
-      console.log('I read this: ' + jsonValue)
-      setTaskItems(JSON.parse(jsonValue))
-      return JSON.parse(jsonValue)
+      const taskList = await AsyncStorage.getItem('showList')
+      const savedScore = await AsyncStorage.getItem('score')
+      
+      setTaskItems(JSON.parse(taskList))
+      setScore(JSON.parse(savedScore))
+      navigation.setOptions({headerRight: () =>
+        <View style={styles.scoreView}>
+          <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
+          <Text style={{fontWeight: 'bold'}}>{savedScore}</Text>
+        </View>
+      }) 
+      return JSON.parse(taskList)
     } catch(e) {
       console.log(e)
     }
@@ -73,6 +81,7 @@ function Tasks({ navigation }) {
       itemsCopy.splice(index, 1)
       
       await AsyncStorage.setItem('showList', JSON.stringify(itemsCopy));
+      await AsyncStorage.setItem('score', JSON.stringify((taskItems[index].points + score)));
     } catch(e) {
       console.log(e)
     }
@@ -86,7 +95,7 @@ function Tasks({ navigation }) {
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
-    setScoreItems([...scoreItems, score])
+    // setScoreItems([...scoreItems, score])
     saveTask(task)
     setTask({
       title: "",

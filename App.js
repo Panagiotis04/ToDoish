@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { 
         View, 
         Text, 
@@ -14,13 +14,7 @@ import {
 
 
        } from 'react-native';
-// import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
-// import {
-//   createDrawerNavigator,
-//   DrawerContentScrollView,
-//   DrawerItemList,
-//   DrawerItem,
-// } from '@react-navigation/drawer';
+
 import Task from './Task';
 import Order from './Order';
 
@@ -31,7 +25,8 @@ import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState({
@@ -44,12 +39,55 @@ function Tasks({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [score, setScore] = useState(0);
   const [scoreItems, setScoreItems] = useState([]);
+  const [key, setKey] = useState(-1);
+  const [keyItems, setKeyItems] = useState([]);
 
+  const readTasks = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('showList')
+      console.log('I read this: ' + jsonValue)
+      setTaskItems(JSON.parse(jsonValue))
+      return JSON.parse(jsonValue)
+    } catch(e) {
+      console.log(e)
+    }
+      console.log('read.')
+  }
+
+  const saveTask = async (value) => {
+    try {
+      var showList = JSON.parse(await AsyncStorage.getItem('showList') || "[]");
+      showList.push(value);
+      
+      await AsyncStorage.setItem('showList', JSON.stringify(showList));
+    } catch(e) {
+      console.log(e)
+    }
+    console.log('saved.')
+  }
+
+  const clearTask = async (index) => {
+    try {
+      var showList = JSON.parse(await AsyncStorage.getItem('showList') || "[]");
+      let itemsCopy = [...showList]
+      itemsCopy.splice(index, 1)
+      
+      await AsyncStorage.setItem('showList', JSON.stringify(itemsCopy));
+    } catch(e) {
+      console.log(e)
+    }
+    console.log('saved.')
+  } 
+
+  useEffect(() => {
+    readTasks()
+  }, [])
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
     setScoreItems([...scoreItems, score])
+    saveTask(task)
     setTask({
       title: "",
       important: false,
@@ -66,6 +104,7 @@ function Tasks({ navigation }) {
         <Text style={{fontWeight: 'bold'}}>{taskItems[index].points + score}</Text>
       </View>
     })
+    clearTask(index)
     let itemsCopy = [...taskItems]
     itemsCopy.splice(index, 1)
     setTaskItems(itemsCopy)
@@ -73,6 +112,7 @@ function Tasks({ navigation }) {
 
   const multFuncEx = () => {
     haddleAddTask();
+
     setModalVisible(!setModalVisible)
   }
 
@@ -114,7 +154,7 @@ function Tasks({ navigation }) {
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
                       text={item.title} 
-                      image={item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
+                      image={(item.title !== undefined) ? item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase() : "biking"} 
                       ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
                       important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}

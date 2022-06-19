@@ -18,3 +18,4 @@ Since I have used some icons for this app I would like to attribute their creato
 - <a href="https://www.flaticon.com/free-icons/warning" title="warning icons">Warning icons created by Flat Icons - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/alert" title="alert icons">Alert icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/notification" title="notification icons">Notification icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/thunder" title="thunder icons">Thunder icons created by Pixel perfect - Flaticon</a>

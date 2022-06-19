@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { 
         View, 
         Text, 
@@ -14,13 +14,7 @@ import {
 
 
        } from 'react-native';
-// import { NavigationContainer, DrawerActions, StackActions } from '@react-navigation/native';
-// import {
-//   createDrawerNavigator,
-//   DrawerContentScrollView,
-//   DrawerItemList,
-//   DrawerItem,
-// } from '@react-navigation/drawer';
+
 import Task from './Task';
 import Order from './Order';
 
@@ -31,7 +25,8 @@ import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { Ionicons } from '@expo/vector-icons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 function Tasks({ navigation }) {
   const [task, setTask] = useState({
@@ -44,12 +39,64 @@ function Tasks({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [score, setScore] = useState(0);
   const [scoreItems, setScoreItems] = useState([]);
+  const [key, setKey] = useState(-1);
+  const [keyItems, setKeyItems] = useState([]);
 
+  const readTasks = async () => {
+    try {
+      const taskList = await AsyncStorage.getItem('showList')
+      const savedScore = await AsyncStorage.getItem('score')
+      
+      setTaskItems(JSON.parse(taskList))
+      setScore(JSON.parse(savedScore))
+      navigation.setOptions({headerRight: () =>
+        <View style={styles.scoreView}>
+          <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
+          <Text style={{fontWeight: 'bold'}}>{savedScore}</Text>
+        </View>
+      }) 
+      return JSON.parse(taskList)
+    } catch(e) {
+      console.log(e)
+    }
+      console.log('read.')
+  }
+
+  const saveTask = async (value) => {
+    try {
+      var showList = JSON.parse(await AsyncStorage.getItem('showList') || "[]");
+      showList.push(value);
+      
+      await AsyncStorage.setItem('showList', JSON.stringify(showList));
+    } catch(e) {
+      console.log(e)
+    }
+    // console.log('saved.')
+  }
+
+  const clearTask = async (index) => {
+    try {
+      var showList = JSON.parse(await AsyncStorage.getItem('showList') || "[]");
+      let itemsCopy = [...showList]
+      itemsCopy.splice(index, 1)
+      
+      await AsyncStorage.setItem('showList', JSON.stringify(itemsCopy));
+      await AsyncStorage.setItem('score', JSON.stringify((taskItems[index].points + score)));
+    } catch(e) {
+      console.log(e)
+    }
+    console.log('saved.')
+  } 
+
+  useEffect(() => {
+    readTasks()
+  }, [])
 
   const haddleAddTask = () => {
     Keyboard.dismiss()
     setTaskItems([...taskItems, task])
-    setScoreItems([...scoreItems, score])
+    // setScoreItems([...scoreItems, score])
+    saveTask(task)
     setTask({
       title: "",
       important: false,
@@ -59,15 +106,22 @@ function Tasks({ navigation }) {
   }  
 
   const completeTask = (index) => {
+    setScore(taskItems[index].points + score)
+    navigation.setOptions({headerRight: () =>
+      <View style={styles.scoreView}>
+        <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
+        <Text style={{fontWeight: 'bold'}}>{taskItems[index].points + score}</Text>
+      </View>
+    })
+    clearTask(index)
     let itemsCopy = [...taskItems]
-    setScore(score + taskItems[index].points)
-    navigation.setOptions({headerRight: () => <Text>{score}</Text>})
     itemsCopy.splice(index, 1)
     setTaskItems(itemsCopy)
   }
 
   const multFuncEx = () => {
     haddleAddTask();
+
     setModalVisible(!setModalVisible)
   }
 
@@ -79,17 +133,34 @@ function Tasks({ navigation }) {
 
   const updateErgency = (e, p) => {
     setTask(previousState => {
-      return { ...previousState, ergent: !e, points: !e === true ? p + 1 : p - 1}
+      return { ...previousState, ergent: !e, points: !e === true ? p + 2 : p - 2}
     });
   }
 
   const updateImportance = (i, p) => {
     setTask(previousState => {
-      return { ...previousState, important: !i, points: !i === true ? p + 2 : p - 2}
+      return { ...previousState, important: !i, points: !i === true ? p + 1 : p - 1}
     });
   }
 
-  const iconsNames = ['biking', 'boxing', 'gym', 'notes', 'notFound']
+  var iconMap = new Map()
+  iconMap.set('biking', ['biking', 'bike'])
+  iconMap.set('boxing', ['box', 'boxing'])
+  iconMap.set('gym', ['gym', 'weightlifting', 'weights'])
+  iconMap.set('notes', ['notes', 'homework', 'write'])
+
+  const getMapValue = (word) => {
+    for(let key of iconMap.keys()) {
+      let value = iconMap.get(key) 
+      // console.log('Value: ' + value)
+      if(value.includes(word)) {
+        // console.log('Key: ' + key)
+        return key
+      }
+    }
+    return 'notFound'
+
+  }
 
   return (
     <View style={styles.container}>
@@ -109,7 +180,7 @@ function Tasks({ navigation }) {
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
                       text={item.title} 
-                      image={item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase()} 
+                      image={(item.title !== undefined) ? item.title.split(" ").map(x => getMapValue(x.toLowerCase()))[0] : "biking"} 
                       ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
                       important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}
@@ -361,17 +432,10 @@ function MyDrawer() {
         fontWeight: "bold",
         color: "white",
       },
-      headerRight: (t) => (
-        <View>
-          {/* <Ionicons
-            name={'thumbs-up'}
-            size={24}
-            style={{ marginRight: 20 }}
-            onPress={() =>
-              navigation.dispatch(DrawerActions.toggleDrawer())
-            }
-          /> */}
-          <Text>{t.text}</Text>
+      headerRight: () => (
+        <View style={styles.scoreView}>
+          <Image source={require('./assets/thunder.png')} style={{height: 20, width: 20}}></Image>
+          <Text style={{fontWeight: 'bold'}}>0</Text>
         </View>
         ),
     })} initialParams={{id: "Test 1"}}/>
@@ -569,6 +633,15 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     padding: 20,
+  },
+  scoreView: {
+    display: 'flex',
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderColor: 'black',
+    borderWidth: 0,
+    marginLeft: 10,
   },
 
 });

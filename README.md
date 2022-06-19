@@ -18,4 +18,9 @@ Since I have used some icons for this app I would like to attribute their creato
 - <a href="https://www.flaticon.com/free-icons/warning" title="warning icons">Warning icons created by Flat Icons - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/alert" title="alert icons">Alert icons created by Freepik - Flaticon</a>
 - <a href="https://www.flaticon.com/free-icons/notification" title="notification icons">Notification icons created by Freepik - Flaticon</a>
-- <a href="https://www.flaticon.com/free-icons/thunder" title="thunder icons">Thunder icons created by Pixel perfect - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/call" title="call icons">Call icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/meeting" title="meeting icons">Meeting icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/drink" title="drink icons">Drink icons created by Good Ware - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/plate" title="plate icons">Plate icons created by Nikita Golubev - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/chef" title="chef icons">Chef icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/free-icons/walk" title="walk icons">Walk icons created by Freepik - Flaticon</a>

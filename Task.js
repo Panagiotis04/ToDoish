@@ -18,6 +18,10 @@ const Task = (props) => {
     iconMap.set('important', require('./assets/important.png'))
     iconMap.set('notImportant', require('./assets/notImportant.png'))
     iconMap.set('whiteIcon', require('./assets/whiteIcon.png'))
+    iconMap.set('cooking', require('./assets/cooking.png'))
+    iconMap.set('eating', require('./assets/eating.png'))
+    iconMap.set('drinks', require('./assets/drinks.png'))
+    iconMap.set('meeting', require('./assets/meeting.png'))
 
 
     return (

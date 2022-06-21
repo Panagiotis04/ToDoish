@@ -148,6 +148,10 @@ function Tasks({ navigation }) {
   iconMap.set('boxing', ['box', 'boxing'])
   iconMap.set('gym', ['gym', 'weightlifting', 'weights'])
   iconMap.set('notes', ['notes', 'homework', 'write'])
+  iconMap.set('cooking', ['cook', 'cooking'])
+  iconMap.set('meeting', ['meeting'])
+  iconMap.set('drinks', ['drinks', 'drinking', 'cocktail', 'cocktails', 'margaritas'])
+  iconMap.set('eating', ['eat', 'eating'])
 
   const getMapValue = (word) => {
     for(let key of iconMap.keys()) {
@@ -180,7 +184,7 @@ function Tasks({ navigation }) {
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
                       text={item.title} 
-                      image={(item.title !== undefined) ? item.title.split(" ").map(x => getMapValue(x.toLowerCase()))[0] : "biking"} 
+                      image={(item.title !== undefined) ? item.title.split(" ").map(x => getMapValue(x.toLowerCase())).filter(y => y !== 'notFound')[0] : "biking"} 
                       ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
                       important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}

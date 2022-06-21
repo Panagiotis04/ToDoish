@@ -156,14 +156,11 @@ function Tasks({ navigation }) {
   const getMapValue = (word) => {
     for(let key of iconMap.keys()) {
       let value = iconMap.get(key) 
-      // console.log('Value: ' + value)
       if(value.includes(word)) {
-        // console.log('Key: ' + key)
         return key
       }
     }
     return 'notFound'
-
   }
 
   return (
@@ -171,7 +168,8 @@ function Tasks({ navigation }) {
       <View style={styles.tasksWrapper}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.item}>
-            { 
+            {
+              (taskItems.length > 0) ? (
               taskItems.sort(function(a, b) {
                 if(a.points > b.points) 
                   return -1;
@@ -184,14 +182,19 @@ function Tasks({ navigation }) {
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
                       text={item.title} 
-                      image={(item.title !== undefined) ? item.title.split(" ").map(x => getMapValue(x.toLowerCase())).filter(y => y !== 'notFound')[0] : "biking"} 
+                      image={(item.title !== undefined) ? item.title.split(" ").map(x => getMapValue(x.toLowerCase())).filter(y => y !== 'notFound')[0] : 'biking'} 
                       ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
                       important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}
                     /> 
                   </TouchableOpacity>
                 )
-              })
+              }))
+              : 
+              <View style={styles.noTaskView}>
+                <Image style={{width: 80, height: 80}} source={require('./assets/empty-set.png')}></Image>
+                <Text style={{opacity: 1, fontSize: 15, marginTop: 10}}>No tasks were found</Text>
+              </View>
             }
           </View>
         </ScrollView>
@@ -544,6 +547,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  noTaskView: {
+    alignItems: 'center',
+    marginTop: 40, 
+    opacity: 0.6, 
   },
   button: {
     width: 60,

@@ -5,8 +5,10 @@ I have developed a simple to-do application in Javascript using React Native API
 ### Features:
 
 - Add tasks
+  * Each task has a score depending on its Ergency/Importance. For example, a task that is neither urgent nor important receives 1 point, a task that is only urgent receives 2 points, a task that is only important receives 3 and a task that is both receives 4 points.
   * When adding a task an algorithm will automatically choose the most suited icon for the task title.
 - Remove tasks
+  * Tasks can be easily deleted by just tapping on them
 
 Since I have used some icons for this app I would like to attribute their creators for their effort to make them. Therefore here are the links for all the icons:
 

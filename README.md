@@ -1,10 +1,11 @@
 # ToDoish
 
-I have developed a simple to-do application in Javascript using React Native API.
+I have developed a simple to-do application in Javascript using React Native API, were users can keep track of there tasks based on Eisenhower's Urgent/Important Principle.
 
 ### Features:
 
 - Add tasks
+  * When adding a task an algorithm will automatically choose the most suited icon for the task title.
 - Remove tasks
 
 Since I have used some icons for this app I would like to attribute their creators for their effort to make them. Therefore here are the links for all the icons:

@@ -18,6 +18,10 @@ const Task = (props) => {
     iconMap.set('important', require('./assets/important.png'))
     iconMap.set('notImportant', require('./assets/notImportant.png'))
     iconMap.set('whiteIcon', require('./assets/whiteIcon.png'))
+    iconMap.set('cooking', require('./assets/cooking.png'))
+    iconMap.set('eating', require('./assets/eating.png'))
+    iconMap.set('drinks', require('./assets/drinks.png'))
+    iconMap.set('meeting', require('./assets/meeting.png'))
 
 
     return (
@@ -27,7 +31,7 @@ const Task = (props) => {
                 <Text style={styles.itemTitle}>{props.text}</Text>
                 <Image source={iconMap.has(props.ergent) ? iconMap.get(props.ergent) : iconMap.get('whiteIcon')} style={styles.icon} />
                 <Image source={iconMap.has(props.important) ? iconMap.get(props.important) : iconMap.get('whiteIcon')} style={styles.icon} />
-                <Text style={styles.itemTitle}>{props.points}</Text>
+                {/* <Text style={styles.itemTitle}>{props.points}</Text> */}
             </View>
             <View style={styles.circular}></View>
         </View>

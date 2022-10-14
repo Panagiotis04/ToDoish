@@ -71,7 +71,7 @@ function Tasks({ navigation }) {
     } catch(e) {
       console.log(e)
     }
-    console.log('saved.')
+    // console.log('saved.')
   }
 
   const clearTask = async (index) => {
@@ -143,14 +143,33 @@ function Tasks({ navigation }) {
     });
   }
 
-  const iconsNames = ['biking', 'boxing', 'gym', 'notes', 'notFound']
+  var iconMap = new Map()
+  iconMap.set('biking', ['biking', 'bike'])
+  iconMap.set('boxing', ['box', 'boxing'])
+  iconMap.set('gym', ['gym', 'weightlifting', 'weights'])
+  iconMap.set('notes', ['notes', 'homework', 'write'])
+  iconMap.set('cooking', ['cook', 'cooking'])
+  iconMap.set('meeting', ['meeting'])
+  iconMap.set('drinks', ['drinks', 'drinking', 'cocktail', 'cocktails', 'margaritas'])
+  iconMap.set('eating', ['eat', 'eating'])
+
+  const getMapValue = (word) => {
+    for(let key of iconMap.keys()) {
+      let value = iconMap.get(key) 
+      if(value.includes(word)) {
+        return key
+      }
+    }
+    return 'notFound'
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
         <ScrollView style={styles.scrollView}>
           <View style={styles.item}>
-            { 
+            {
+              (taskItems.length > 0) ? (
               taskItems.sort(function(a, b) {
                 if(a.points > b.points) 
                   return -1;
@@ -163,14 +182,19 @@ function Tasks({ navigation }) {
                   <TouchableOpacity key={index} onPress={() => completeTask(index)}>
                     <Task 
                       text={item.title} 
-                      image={(item.title !== undefined) ? item.title.split(" ").filter(x => iconsNames.includes(x.toLowerCase())).concat(['notFound'])[0].toLowerCase() : "biking"} 
+                      image={(item.title !== undefined) ? item.title.split(" ").map(x => getMapValue(x.toLowerCase())).filter(y => y !== 'notFound')[0] : 'biking'} 
                       ergent={item.ergent === true ? 'ergent' : (item.ergent === false && item.important === true) ? 'important' : 'whiteIcon'}
                       important={item.ergent === true && item.important === true ? 'important' : 'whiteIcon'}
                       points={item.points}
                     /> 
                   </TouchableOpacity>
                 )
-              })
+              }))
+              : 
+              <View style={styles.noTaskView}>
+                <Image style={{width: 80, height: 80}} source={require('./assets/empty-set.png')}></Image>
+                <Text style={{opacity: 1, fontSize: 15, marginTop: 10}}>No tasks were found</Text>
+              </View>
             }
           </View>
         </ScrollView>
@@ -523,6 +547,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  noTaskView: {
+    alignItems: 'center',
+    marginTop: 40, 
+    opacity: 0.6, 
   },
   button: {
     width: 60,
